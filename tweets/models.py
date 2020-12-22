@@ -1,9 +1,17 @@
 import random
+from django.conf import settings
 from django.db import models
+
+User = settings.AUTH_USER_MODEL # reference to built in django feature for user model
 
 class Tweet(models.Model):
     # Maps to SQL Data
     # id = models.AutoField(primary_key=True)
+
+    # FK -> many users can have many tweets
+    # CASCADE option means on owner user delete, delete all tweets
+    # using null=True, a model field can be optionally empty
+    user = models.ForeignKey(User, on_delete=models.CASCADE)     
     content = models.TextField(blank=True, null=True)
     image = models.FileField(upload_to='images/', blank=True, null=True)
 
