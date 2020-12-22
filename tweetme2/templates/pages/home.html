@@ -18,7 +18,7 @@ Welcome To Tweetme 2!!
         <form class="form" id='tweet-create-form' method="POST" action='/create-tweet'>
             {% csrf_token %}
             <input type="hidden" name="next" value="/" />
-            <textarea class='form-control' name="content" placeholder="Your Tweet..."></textarea>
+            <textarea required='required' class='form-control' name="content" placeholder="Your Tweet..."></textarea>
             <button type='submit' class="btn btn-primary">Tweet</button>
         </form>
     </div>
@@ -46,8 +46,11 @@ const handleTweetCreateFormDidSubmit = function(event) {
         if (xhr.status === 201) {
             const newTweetJson = xhr.response // from the views function, its get a response which is a redirect in this case
             const newTweetElement = formatTweetElement(newTweetJson) // create proper tweet html structure
+            const ogHTML = tweetsContainerElement.innerHTML
+            tweetsContainerElement.innerHTML = newTweetElement + ogHTML
             console.log(newTweetJson)
             console.log(newTweetElement)
+            myForm.reset()
         }
 
     }
