@@ -2,7 +2,7 @@ import random
 from django.conf import settings
 from django.db import models
 
-User = settings.AUTH_USER_MODEL # reference to built in django feature for user model
+User = settings.AUTH_USER_MODEL # reference to built in django user model, provides many common attributes
 
 class Tweet(models.Model):
     # Maps to SQL Data
