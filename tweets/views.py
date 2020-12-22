@@ -31,6 +31,9 @@ def tweet_create_view(request, *args, **kwargs):
         if next_url != None and is_safe_url(next_url, ALLOWED_HOSTS):
             return redirect(next_url)
         form = TweetForm()
+    # if form has errors
+    if form.errors:
+        return JsonResponse(form.errors, status=400) # 400 is for errors
     return render(request, 'components/form.html', context={"form" : form})
 
 def tweet_list_view(request, *args, **kwargs):
