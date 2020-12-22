@@ -32,12 +32,32 @@ Welcome To Tweetme 2!!
 
 const handleTweetCreateFormDidSubmit = function(event) {
     event.preventDefault() // prevents tweet-create form from submitting POST request to default url
+    const myForm = event.target
+    const myFormData = new FormData(myForm) // build in JS class related to form data 
+    const url = myForm.getAttribute('action') // action=url ('/create-tweet')
+    const method = myForm.getAttribute('method') // method=POST
+    const xhr = new XMLHttpRequest()
+    const responseType = 'json'
+    xhr.responseType = responseType // this is 'text' by default, setting it to 'json' helps autoparse the reponse as json
+    xhr.open(method, url) // make the request 
+    xhr.setRequestHeader('HTTP_X_REQUESTED_WITH', 'XMLHttpRequest') // convetion to call setRequestHeader is after open and before send
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+    xhr.onload = function() { // get server response if request completes successfully
+        if (xhr.status === 201) {
+            const newTweetJson = xhr.response // from the views function, its get a response which is a redirect in this case
+            const newTweetElement = formatTweetElement(newTweetJson) // create proper tweet html structure
+            console.log(newTweetJson)
+            console.log(newTweetElement)
+        }
+
+    }
+    xhr.send(myFormData)
 }
 
 const tweetCreateFormEl = document.getElementById('tweet-create-form')
 tweetCreateFormEl.addEventListener('submit', handleTweetCreateFormDidSubmit)
 
-const tweetsEl = document.getElementById("tweets")
+const tweetsContainerElement = document.getElementById("tweets")
 
 const loadTweets = function(tweetsElement) {
     const xhr = new XMLHttpRequest()
@@ -55,7 +75,6 @@ const loadTweets = function(tweetsElement) {
         for (i = 0; i <listedItems.length; i++) {
             var tweetObj = listedItems[i]
             var currentTweetStr = formatTweetElement(tweetObj)
-            console.log(currentTweetStr)
             finalTweetStr  += currentTweetStr
         }
         tweetsElement.innerHTML = finalTweetStr
@@ -63,7 +82,7 @@ const loadTweets = function(tweetsElement) {
     xhr.send() 
 }
 
-loadTweets(tweetsEl)
+loadTweets(tweetsContainerElement)
 
 {% comment %} tweetsElement.innerHTML = el1 + el2 + el3 {% endcomment %}
 

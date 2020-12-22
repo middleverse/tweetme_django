@@ -13,16 +13,21 @@ ALLOWED_HOSTS = settings.ALLOWED_HOSTS
 def home_view(request, *args, **kwargs):
     return render(request,'pages/home.html', context={}, status=400)
 
+# saves form to DB after POST request
+# handles redirect/render
 def tweet_create_view(request, *args, **kwargs):
     form = TweetForm(request.POST or None) # TweetForm class initialized with optional data
-    
     next_url = request.POST.get('next') or None
-    print('NExt url: ' + next_url)
+    print('Request url: ', request.get_full_path())
+    # print('Next url: ' + next_url)
     # If the form has valud content (aka there's likely been a POST request)
+    # save it to the model
     if form.is_valid():
-        obj = form.save(commit=False) # save returns an object that hasn't been saved to the DB yet
+        obj = form.save(commit=False) # save returns a model object that hasn't been saved to the DB yet
         # do other form related logic in between
         obj.save() # save the object to the database
+        if request.is_ajax():
+            return JsonResponse(obj.serialize(), status=201) # 201 is for created items
         if next_url != None and is_safe_url(next_url, ALLOWED_HOSTS):
             return redirect(next_url)
         form = TweetForm()
@@ -35,7 +40,7 @@ def tweet_list_view(request, *args, **kwargs):
     returns json data
     """
     qs = Tweet.objects.all()
-    tweets_list = [{"id": x.id, "content": x.content, "likes" : random.randint(0, 123)} for x in qs]
+    tweets_list = [x.serialize() for x in qs]
     data = {
         "isUser": False,
         'response': tweets_list
