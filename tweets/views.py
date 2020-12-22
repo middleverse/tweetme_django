@@ -11,11 +11,19 @@ from .models import Tweet
 ALLOWED_HOSTS = settings.ALLOWED_HOSTS
 
 def home_view(request, *args, **kwargs):
+    print(request.user or None)
     return render(request,'pages/home.html', context={}, status=400)
 
 # saves form to DB after POST request
 # handles redirect/render
 def tweet_create_view(request, *args, **kwargs):
+    user = request.user
+    if not request.user.is_authenticated:
+        user = None
+        if request.is_ajax():
+            return JsonResponse({}, status=401) # 401 means not authorized
+        return redirect(settings.LOGIN_URL)
+
     form = TweetForm(request.POST or None) # TweetForm class initialized with optional data
     next_url = request.POST.get('next') or None
     print('Request url: ', request.get_full_path())
@@ -25,6 +33,7 @@ def tweet_create_view(request, *args, **kwargs):
     if form.is_valid():
         obj = form.save(commit=False) # save returns a model object that hasn't been saved to the DB yet
         # do other form related logic in between
+        obj.user = request.user
         obj.save() # save the object to the database
         if request.is_ajax():
             return JsonResponse(obj.serialize(), status=201) # 201 is for created items
