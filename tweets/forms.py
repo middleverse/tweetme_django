@@ -1,9 +1,9 @@
+from django.conf import settings
 from django import forms
 
 from .models import Tweet
 
-
-MAX_TWEET_LENGTH = 240
+MAX_TWEET_LENGTH = settings.MAX_TWEET_LENGTH
 
 # TweetForm is a subclass of a model, hence a model itself
 # NOTE: ModelForm maps a model class's fields to HTML form

@@ -85,6 +85,9 @@ const handleTweetCreateFormDidSubmit = function(event) {
         } else if(xhr.status === 401) { // doesn't always mean login error, but for now use this
             alert("You must log in!")
             window.location.href = "/login"
+        } else if(xhr.status === 403) { // user not authenticated error
+            alert("You must log in!")
+            window.location.href = "/login"
         } else if(xhr.status === 500) { // server error
             alert("There was a server error, please try again.")
         }
@@ -111,7 +114,7 @@ const loadTweets = function(tweetsElement) {
     xhr.open(method, url)
     xhr.onload = function() {
         const serverResponse = xhr.response 
-        var listedItems = serverResponse.response
+        var listedItems = serverResponse
         var finalTweetStr = ""
         var i;
         for (i = 0; i <listedItems.length; i++) {
