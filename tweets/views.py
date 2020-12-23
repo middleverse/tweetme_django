@@ -55,7 +55,7 @@ def tweet_create_view_pure_django(request, *args, **kwargs):
 
 
 @api_view(['POST']) # http method from client == POST
-@authentication_classes([SessionAuthentication])
+# @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated]) # if user is authenticated, then they have access to this view
 def tweet_create_view(request, *args, **kwargs):
     """
@@ -79,6 +79,22 @@ def tweet_detail_view(request, tweet_id, *args, **kwargs):
     obj = qs.first()
     serializer = TweetSerializer(obj) # qs is multiple instances, and many is explicit flag for that
     return Response(serializer.data)
+
+@api_view(['DELETE', 'POST']) 
+@permission_classes([IsAuthenticated]) # if user is authenticated, then they have access to this view
+def tweet_delete_view(request, tweet_id, *args, **kwargs):
+    """
+    REST API Delete View -> DRF
+    """
+    qs = Tweet.objects.filter(id=tweet_id)
+    if not qs.exists():
+        return Response({}, status=404)
+    qs = qs.filter(user=request.user)
+    if not qs.exists(): # if no tweet exists after user filteration
+        return Response({'message': 'You cannot delete this tweet.'}, status=404)
+    obj = qs.first()
+    obj.delete()
+    return Response({'message': 'Tweet removed.'}, status=200)
 
 @api_view(['GET']) # only http method allowed == GET
 def tweet_list_view(request, *args, **kwargs):
