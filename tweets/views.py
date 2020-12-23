@@ -58,6 +58,9 @@ def tweet_create_view_pure_django(request, *args, **kwargs):
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated]) # if user is authenticated, then they have access to this view
 def tweet_create_view(request, *args, **kwargs):
+    """
+    REST API Create View -> DRF
+    """
     serializer = TweetSerializer(data=request.POST or None)
     if serializer.is_valid(raise_exception=True): # raise exception sends correct error back implictly
          serializer.save(user=request.user)
@@ -66,6 +69,10 @@ def tweet_create_view(request, *args, **kwargs):
 
 @api_view(['GET']) # only http method allowed == GET
 def tweet_detail_view(request, tweet_id, *args, **kwargs):
+    """
+    REST API Detail View -> DRF
+    returns details for tweet with id=tweet_id as json
+    """
     qs = Tweet.objects.filter(id=tweet_id)
     if not qs.exists():
         return Response({}, status=404)
@@ -75,6 +82,10 @@ def tweet_detail_view(request, tweet_id, *args, **kwargs):
 
 @api_view(['GET']) # only http method allowed == GET
 def tweet_list_view(request, *args, **kwargs):
+    """
+    REST API List View -> DRF
+    returns all tweets as json response
+    """
     qs = Tweet.objects.all()
     serializer = TweetSerializer(qs, many=True) # qs is multiple instances, and many is explicit flag for that
     return Response(serializer.data)
