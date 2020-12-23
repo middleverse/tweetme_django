@@ -10,7 +10,7 @@ from rest_framework.decorators import api_view, permission_classes, authenticati
 from rest_framework.permissions import IsAuthenticated
 from .forms import TweetForm
 from .models import Tweet
-from .serializers import TweetSerializer
+from .serializers import TweetSerializer, TweetActionSerializer
 
 ALLOWED_HOSTS = settings.ALLOWED_HOSTS
 
@@ -66,6 +66,32 @@ def tweet_create_view(request, *args, **kwargs):
          serializer.save(user=request.user)
          return Response(serializer.data, status=201)
     return Response({}, status=400)
+
+
+@api_view(['POST']) # http method from client == POST
+@permission_classes([IsAuthenticated]) # if user is authenticated, then they have access to this view
+def tweet_action_view(request, *args, **kwargs):
+    """
+    id is required
+    Action options are: like, unlike, retweet
+    These Actions are what all users have control over regarding a tweet
+    """
+    serializer = TweetActionSerializer(request.POST)
+    if serializer.is_valid(raise_exception=True):
+        data = serializer.validated_data
+        tweet_id = data.get('id')
+        action = data.get('action')
+        qs = Tweet.objects.filter(id=tweet_id)
+        if not qs.exists():
+            return Response({}, status=404)
+        obj = qs.first()
+        if action == 'like':
+            obj.likes.add(request.user)
+        elif action == 'unlike':
+            obj.likes.remove(request.user)
+        elif action == 'retweet':
+            pass
+    return Response({'message': f'Tweet {action}ed.'}, status=201)
 
 @api_view(['GET']) # only http method allowed == GET
 def tweet_detail_view(request, tweet_id, *args, **kwargs):
