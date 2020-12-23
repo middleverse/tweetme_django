@@ -82,10 +82,13 @@ const handleTweetCreateFormDidSubmit = function(event) {
             else {
                 alert("An error occurred. Please try again.")
             }
-        }
-        else if(xhr.status === 500) { // server error
+        } else if(xhr.status === 401) { // doesn't always mean login error, but for now use this
+            alert("You must log in!")
+            window.location.href = "/login"
+        } else if(xhr.status === 500) { // server error
             alert("There was a server error, please try again.")
         }
+
 
     }
     xhr.onerror = function() {
