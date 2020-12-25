@@ -16,6 +16,7 @@ class Tweet(models.Model):
     # FK -> many users can have many tweets
     # CASCADE option means on owner user delete, delete all tweets
     # using null=True, a model field can be optionally empty
+    parent = models.ForeignKey("self", null=True, on_delete=models.SET_NULL)
     user = models.ForeignKey(User, on_delete=models.CASCADE)     
     likes = models.ManyToManyField(User, related_name="tweet_user", blank=True, through=TweetLike)
     content = models.TextField(blank=True, null=True)

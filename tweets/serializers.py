@@ -10,7 +10,9 @@ TWEET_ACTION_OPTIONS = settings.TWEET_ACTION_OPTIONS
 class TweetActionSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     action = serializers.CharField()
-
+    # content required for retweet (can be blank)
+    content = serializers.CharField(allow_blank=True, required=False)
+    
     def validate_action(self, value):
         value = value.lower().strip()
         if value not in TWEET_ACTION_OPTIONS:
