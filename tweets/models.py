@@ -26,7 +26,14 @@ class Tweet(models.Model):
     class Meta:
         ordering = ['-id'] # newest tweet should be first in this case
 
+    @property
+    def is_retweet(self):
+        return self.parent != None
+
     def serialize(self):
+        '''
+        Old way of serializing, not in use
+        '''
         return {
             "id": self.id,
             "content": self.content,

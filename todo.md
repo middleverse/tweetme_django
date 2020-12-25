@@ -4,6 +4,8 @@
         -> Image
     -> Deleting
     -> Retweeting
+        -> Read only serializer
+        -> Create only serializer
     -> Liking and Unliking
 
 2. USERS
