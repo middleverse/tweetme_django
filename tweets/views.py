@@ -106,7 +106,7 @@ def tweet_action_view(request, *args, **kwargs):
                 content=content,
             )
             serializer = TweetSerializer(new_tweet)
-            return Response(serializer.data, status=200)
+            return Response(serializer.data, status=201)
     return Response({'message': f'Tweet {action}ed.'}, status=201)
 
 @api_view(['GET']) # only http method allowed == GET
